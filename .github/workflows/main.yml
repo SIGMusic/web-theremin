@@ -1,0 +1,36 @@
+name: CI
+
+defaults:
+  run:
+    shell: bash
+    working-directory: theremin-ui
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Build
+      run: |
+        yarn install
+        yarn run build
+      env:
+        REACT_APP_QKT_HOST: ${{ secrets.REACT_APP_THEREMIN_HOST }}
+        REACT_APP_QKT_PORT: ${{ secrets.REACT_APP_THEREMIN_PORT }}
+
+    - name: Deploy
+      uses: JamesIves/github-pages-deploy-action@releases/v3
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BRANCH: gh-pages
+        FOLDER: theremin-ui/build
