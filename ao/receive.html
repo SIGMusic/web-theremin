@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <style>
+            .dot {
+            height: 25px;
+            width: 25px;
+            background-color: #ff0000;
+            border-radius: 50%;
+            display: inline-block;
+            }
+        </style>
+    </head>
+    <body>
+        <table class="display">
+            <tr>
+                <td class="title">Status:</td>
+            </tr>
+            <tr>
+                <td>
+                    <div id="receiver-id" style="font-weight: bold;" title="Copy this ID to the input on send.html.">ID:</div>
+                </td>
+            </tr>
+            <tr>
+                <td><div id="status" class="status"></div></td>
+            </tr>
+        </table>
+        <span id="dot" class="dot"></span>
+        <script src="https://cdn.jsdelivr.net/npm/peerjs@1.2.0/dist/peerjs.min.js"></script>
+        <script src="receive.js"></script>
+    </body>
+</html>
