@@ -1,5 +1,9 @@
 import React from 'react';
-import { Button, Intent, InputGroup, Popover, Menu, MenuItem, Position } from '@blueprintjs/core';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
+import {
+  Button, Intent, InputGroup, Popover, Menu, MenuItem, Position,
+} from '@blueprintjs/core';
+import randomstring from 'randomstring';
 
 
 import Message, { TIMEOUT } from 'utils/Message';
@@ -7,14 +11,24 @@ import Message, { TIMEOUT } from 'utils/Message';
 import 'styles/LandingPage.css';
 
 
-interface Props { }
+interface Props extends RouteComponentProps { }
 
 interface State {
+  /* Toggle for determining whether the user wants to create a new room or join
+   * an existing room.
+   */
   creatingNewRoom: boolean;
+  /* The room code typed into the text box by the user. */
   roomCode: string;
 }
 
-export default class LandingPage extends React.Component<Props, State> {
+
+/**
+ * Represents the LandingPage that the user will initially see when navigating
+ * to the theremin application, granted that they did not specify a room code
+ * in the url.
+ */
+class LandingPage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -26,6 +40,32 @@ export default class LandingPage extends React.Component<Props, State> {
 
   componentDidMount = () => { };
 
+  /**
+   * Generates a random alphanumeric string.
+   */
+  generateRoomCode = () => (
+    randomstring.generate({
+      length: 5,
+      charset: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+    })
+  );
+
+  /**
+   * Join a room.
+   *
+   * @param roomCode - the code of the room to join.
+   *
+   * This function loads a new page.
+   */
+  joinRoom = (roomCode: string) => {
+    const { history } = this.props;
+    history.push(`/room/${roomCode}`);
+  };
+
+  /**
+   * Creates a brand new room.
+   * The code for the room is randomly generated within this function.
+   */
   launchNewRoom = () => {
     Message.show({
       timeout: TIMEOUT,
@@ -33,8 +73,15 @@ export default class LandingPage extends React.Component<Props, State> {
       icon: 'drawer-left',
       intent: Intent.PRIMARY,
     });
+
+    const roomCode = this.generateRoomCode();
+    this.joinRoom(roomCode);
   };
 
+  /**
+   * Joins a room using the room code specified in the input box.
+   *
+   */
   joinExistingRoom = () => {
     Message.show({
       timeout: TIMEOUT,
@@ -42,8 +89,20 @@ export default class LandingPage extends React.Component<Props, State> {
       icon: 'drawer-left',
       intent: Intent.PRIMARY,
     });
+
+    const { roomCode } = this.state;
+    this.joinRoom(roomCode);
   };
 
+
+  /**
+   * A toggle for determining whether the user wants to create a new room or
+   * join an existing room.
+   *
+   * @param yes - If yes is `true`, then the user desires to create a new room.
+   *
+   * This function updates the state.
+   */
   setNewRoom = (yes: boolean) => (
     this.setState({
       creatingNewRoom: yes,
@@ -66,7 +125,7 @@ export default class LandingPage extends React.Component<Props, State> {
     const { creatingNewRoom, roomCode } = this.state;
     const newOrExistingRoomMenu = (
       <Popover
-        content={
+        content={(
           <Menu>
             <MenuItem
               text="Create New Room"
@@ -77,7 +136,7 @@ export default class LandingPage extends React.Component<Props, State> {
               onClick={() => this.setNewRoom(false)}
             />
           </Menu>
-        }
+        )}
         position={Position.BOTTOM_RIGHT}
       >
         <Button
@@ -108,3 +167,5 @@ export default class LandingPage extends React.Component<Props, State> {
     );
   };
 }
+
+export default withRouter(LandingPage);
