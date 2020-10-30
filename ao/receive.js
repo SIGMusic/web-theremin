@@ -1,3 +1,5 @@
+import * as Tone from 'tone'
+
 var lastPeerId = null;
 var peer = null; // Own peer object
 var peerId = null;
@@ -15,6 +17,14 @@ var h = window.innerHeight;
  * peer object.
  */
 function initialize() {
+
+// Create the synth
+const synth = new Tone.Synth().toDestination();
+const now = Tone.now()
+window.addEventListener("click", function(){
+    synth.triggerAttack("C4", now)
+});
+
 // Create own peer object with connection to shared PeerJS server
 peer = new Peer(null, {
     debug: 2
@@ -99,3 +109,4 @@ function ready() {
 }
 
 initialize();
+
