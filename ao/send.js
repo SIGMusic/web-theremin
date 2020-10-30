@@ -13,9 +13,9 @@ function initialize() {
     // Create own peer object with connection to local PeerJS server
     peer = new Peer(null, {
         debug: 2,
-        host: 'localhost',
-        port: 9000,
-        path: '/myapp'
+        // host: 'localhost',
+        // port: 9000,
+        // path: '/myapp'
     });
 
     peer.on('open', function (id) {
@@ -120,7 +120,10 @@ window.addEventListener("load", function(){
     peer = new Peer();
     document.onmousemove = function(event){
 
-        signal({x: event.clientX, y: event.clientY});
+        var width = window.innerWidth;
+        var height = window.innerHeight;
+
+        signal({x: event.clientX / width, y: event.clientY / height});
 
     }
 });

@@ -40,9 +40,9 @@ function initialize() {
 // Create own peer object with connection to local PeerJS server
 peer = new Peer(null, {
     debug: 2,
-    host: 'localhost',
-    port: 9000,
-    path: '/myapp'
+    // host: 'localhost',
+    // port: 9000,
+    // path: '/myapp'
 });
 
 peer.on('open', function (id) {
@@ -116,14 +116,12 @@ function ready() {
         console.log("Data recieved");
         var posObj = JSON.parse(data);
         console.log(posObj);
-        var toFreq = initFreq * Math.pow(2, (posObj.x / (width / wDivisions)))
-        var toVol = hDivisions * (posObj.y / height);
-        // move(posObj.x - last.x, posObj.y - last.y);
+        var toFreq = initFreq * Math.pow(2, ((posObj.x * width) / (width / wDivisions)))
+        var toVol = hDivisions * ((posObj.y * height) / height);
         osc.frequency.value = toFreq;
         osc.volume.value = toVol;
         move(posObj.x, posObj.y);
         console.log("here");
-        //last = posObj;
     });
     conn.on('close', function () {
         status.innerHTML = "Connection reset<br>Awaiting connection...";
