@@ -1,5 +1,3 @@
-import * as Tone from 'tone'
-
 var lastPeerId = null;
 var peer = null; // Own peer object
 var peerId = null;
@@ -10,6 +8,27 @@ var dot = document.getElementById("dot");
 var w = window.innerWidth;
 var h = window.innerHeight;
 
+// Create the synth
+const osc = new Tone.Oscillator().toDestination();
+// Initial frequency (all the way left)
+const initFreq = 440;
+// Semitones per width
+const wDivisions = 12;
+// Decibels per height
+const hDivisions = 20;
+osc.type = "sine";
+osc.frequency.value = initFreq;
+osc.volume.value = -10;
+var on = false;
+window.addEventListener("click", function(){
+    on = !(on)
+    if (on == true) {
+        osc.stop();
+    } else {
+        osc.start();
+    }
+});
+
 /**
  * Create the Peer object for our end of the connection.
  *
@@ -17,13 +36,6 @@ var h = window.innerHeight;
  * peer object.
  */
 function initialize() {
-
-// Create the synth
-const synth = new Tone.Synth().toDestination();
-const now = Tone.now()
-window.addEventListener("click", function(){
-    synth.triggerAttack("C4", now)
-});
 
 // Create own peer object with connection to shared PeerJS server
 peer = new Peer(null, {
@@ -94,10 +106,18 @@ function move(dx, dy) {
 function ready() {
     // var last = {x: 0, y: 0};
     conn.on('data', function (data) {
+        // get window width and height (make these change when 
+        // the window changes instead of checking every time)
+        var width = window.innerWidth;
+        var height = window.innerHeight;
         console.log("Data recieved");
         var posObj = JSON.parse(data);
         console.log(posObj);
+        var toFreq = initFreq * Math.pow(2, (posObj.x / (width / wDivisions)))
+        var toVol = hDivisions * (posObj.y / height);
         // move(posObj.x - last.x, posObj.y - last.y);
+        osc.frequency.value = toFreq;
+        osc.volume.value = toVol;
         move(posObj.x, posObj.y);
         console.log("here");
         //last = posObj;
