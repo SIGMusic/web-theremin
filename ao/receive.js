@@ -37,9 +37,12 @@ window.addEventListener("click", function(){
  */
 function initialize() {
 
-// Create own peer object with connection to shared PeerJS server
+// Create own peer object with connection to local PeerJS server
 peer = new Peer(null, {
-    debug: 2
+    debug: 2,
+    host: 'localhost',
+    port: 9000,
+    path: '/myapp'
 });
 
 peer.on('open', function (id) {

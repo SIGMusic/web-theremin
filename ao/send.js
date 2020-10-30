@@ -10,9 +10,12 @@ var connectButton = document.getElementById("connect-button");
 
 
 function initialize() {
-    // Create own peer object with connection to shared PeerJS server
+    // Create own peer object with connection to local PeerJS server
     peer = new Peer(null, {
-        debug: 2
+        debug: 2,
+        host: 'localhost',
+        port: 9000,
+        path: '/myapp'
     });
 
     peer.on('open', function (id) {
@@ -66,10 +69,11 @@ function join() {
     }
 
     // Create connection to destination peer specified in the input field
+    console.log(recvIdInput.value);
     conn = peer.connect(recvIdInput.value, {
         reliable: true
     });
-
+    console.log(conn);
     conn.on('open', function () {
         status.innerHTML = "Connected to: " + conn.peer;
         console.log("Connected to: " + conn.peer);
