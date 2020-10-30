@@ -116,9 +116,9 @@ function signal(obj) {
     }
 }
 
-window.addEventListener("load", function(){
+window.addEventListener("load", function() {
     peer = new Peer();
-    document.onmousemove = function(event){
+    document.onmousemove = function(event) {
 
         var width = window.innerWidth;
         var height = window.innerHeight;
