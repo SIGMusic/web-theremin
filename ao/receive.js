@@ -111,6 +111,7 @@ function ready() {
     conn.on('data', function (data) {
         // get window width and height (make these change when 
         // the window changes instead of checking every time)
+        // switch to signal ramp function to remove irritating quantization
         var width = window.innerWidth;
         console.log(width);
         var height = window.innerHeight;
