@@ -112,14 +112,17 @@ function ready() {
         // get window width and height (make these change when 
         // the window changes instead of checking every time)
         var width = window.innerWidth;
+        console.log(width);
         var height = window.innerHeight;
+        console.log(height);
         console.log("Data recieved");
         var posObj = JSON.parse(data);
         console.log(posObj);
-        var toFreq = initFreq * Math.pow(2, ((posObj.x * width) / (width / wDivisions)))
+        var toFreq = initFreq * Math.pow(2, posObj.x);
         var toVol = hDivisions * ((posObj.y * height) / height);
         osc.frequency.value = toFreq;
         osc.volume.value = toVol;
+        console.log("Frequency: " + toFreq);
         move(posObj.x, posObj.y);
         console.log("here");
     });
