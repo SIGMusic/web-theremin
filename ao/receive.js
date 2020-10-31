@@ -12,8 +12,6 @@ var h = window.innerHeight;
 const osc = new Tone.Oscillator().toDestination();
 // Initial frequency (all the way left)
 const initFreq = 440;
-// Semitones per width
-const wDivisions = 12;
 // Decibels per height
 const hDivisions = 20;
 osc.type = "sine";
