@@ -1,3 +1,3 @@
 # Theremin Server
 ---
-Flask application for the server.
+Node.js + Express application for the server.

@@ -1,6 +1,23 @@
-FROM python:3.6-slim
+# Pull in the official lightweight version of Node 14.
+FROM node:14-slim
 
+# Create and change to the app directory.
+WORKDIR /app
+
+COPY package.json .
+COPY yarn.lock .
+
+# Install production dependencies.
+RUN yarn install --production
+
+# Copy local codebase into the container image
 COPY . .
-RUN python3.6 -m pip install -r requirements.txt
-EXPOSE $PORT
-CMD exec gunicorn --bind :$PORT --workers 1  --threads 8 --timeout 0 app:app
+
+# Compile.
+RUN yarn build
+
+# Remove unused src directory
+RUN rm -rf src/
+
+# Start the api server
+CMD [ "yarn", "start" ]
