@@ -13,10 +13,10 @@ function initialize() {
     // Create own peer object with connection to local PeerJS server
     peer = new Peer(null, {
         debug: 2,
-        host: 'localhost',
-        port: 9000,
-        path: '/myapp',
-        key: 'peerjs'
+        // host: 'localhost',
+        // port: 9000,
+        // path: '/myapp',
+        // key: 'peerjs'
     });
 
     peer.on('open', function (id) {

@@ -38,10 +38,10 @@ function initialize() {
 // Create own peer object with connection to local PeerJS server
 peer = new Peer(null, {
     debug: 2,
-    host: 'localhost',
-    port: 9000,
-    path: '/myapp',
-    key: 'peerjs'
+    // host: 'localhost',
+    // port: 9000,
+    // path: '/myapp',
+    // key: 'peerjs'
 });
 
 peer.on('open', function (id) {
@@ -59,6 +59,7 @@ peer.on('open', function (id) {
 });
 peer.on('connection', function (c) {
     // Allow only a single connection
+    console.log("here");
     if (conn && conn.open) {
         c.on('open', function() {
             c.send("Already connected to another client");
@@ -123,7 +124,7 @@ function ready() {
         osc.frequency.value = toFreq;
         osc.volume.value = toVol;
         console.log("Frequency: " + toFreq);
-        move(posObj.x, posObj.y);
+        move(posObj.x * width, posObj.y * height);
         console.log("here");
     });
     conn.on('close', function () {
