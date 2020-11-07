@@ -8,21 +8,22 @@ var connection = null;
 var myIdElem = null;
 var peerIdElem = null;
 var inviteLinkElem = null;
+var dotElem = null;
 
 window.addEventListener("load", function(){
     // HTML Elements
     myIdElem = document.getElementById("myId");
     peerIdElem = document.getElementById("peerId");
     inviteLinkElem = document.getElementById("inviteLink");
+    dotElem = document.getElementById("dot");
 
     init();
 
     document.onmousemove = function(event){
-        //console.log(event.clientX + " " + event.clientY)
         if(connection && connection.open){
             connection.send({
-                mouseX: event.clientX,
-                mouseY: event.clientY
+                mouseX: event.clientX / window.innerWidth,
+                mouseY: event.clientY / window.innerHeight
             })
         }
     }
@@ -59,42 +60,43 @@ function init(){
         // If not occupied, connect
         connection = c;
         peerId = connection.peer;
-        console.log("Connected to:", peerId);
-        peerIdElem.innerHTML = "Peer's ID: " + peerId;
 
-        connection.on('data', function(data){
-            console.log("Data received:", data);
-        });
-
-        connection.on('close', function(){
-            console.log("Connection Closed");
-            connection = null;
-            peerId = null;
-        });
+        onConnection();
     });
 }
 
-function connectToPeer(peerId){
+function connectToPeer(id){
      // Close the current connection
      if(connection){ connection.close(); }
 
-     connection = peer.connect(peerId, {
+     connection = peer.connect(id, {
          reliable: true
      });
 
-     connection.on('open', function(){
+     onConnection();
+}
+
+function onConnection(){
+    connection.on('open', function(){
+        peerId = connection.peer;
         console.log("Connected to peer:", peerId);
         peerIdElem.innerHTML = "Peer's ID: " + peerId;
-     });
+    });
 
-     connection.on('data', function(data){
-         console.log("Data received:", data);
-     });
+    connection.on('data', function(data){
+        console.log("Data received:", data);
+        moveDot(data.mouseX*window.innerWidth, data.mouseY*window.innerHeight);
+    });
 
-     connection.on('close', function(){
-         console.log("Connection Closed");
-         connection = null;
-         peerId = null;
-         peerIdElem.innerHTML = "Peer's ID:";
-     });
+    connection.on('close', function(){
+        console.log("Connection Closed");
+        connection = null;
+        peerId = null;
+        peerIdElem.innerHTML = "Peer's ID:";
+    });
+}
+
+function moveDot(dx, dy) {
+    dot.style.left=dx +'px';
+    dot.style.top=dy +'px';
 }
