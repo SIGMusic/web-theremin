@@ -6,10 +6,14 @@ var connection = null;
 
 // HTML Elements
 var myIdElem = null;
+var peerIdElem = null;
+var inviteLinkElem = null;
 
 window.addEventListener("load", function(){
     // HTML Elements
     myIdElem = document.getElementById("myId");
+    peerIdElem = document.getElementById("peerId");
+    inviteLinkElem = document.getElementById("inviteLink");
 
     init();
 
@@ -31,13 +35,17 @@ function init(){
     peer.on('open', function(id){
         myId = id;
         myIdElem.innerHTML = "Your ID: " + myId;
-        connectToPeer();
+        inviteLink.setAttribute("href", "?peer=" + myId);
+
+        // Connect to another user if GET param is there
+        peerId = urlParams.get('peer');
+        if(peerId){
+            connectToPeer(peerId);
+        }
     });
 
     // Be ready for others to connect to us
     peer.on('connection', function(c){
-        console.log("Recieved connection");
-
         // Only allow a single connection
         if(connection && connection.open){
             console.log("Second connection attempt refused");
@@ -52,6 +60,7 @@ function init(){
         connection = c;
         peerId = connection.peer;
         console.log("Connected to:", peerId);
+        peerIdElem.innerHTML = "Peer's ID: " + peerId;
 
         connection.on('data', function(data){
             console.log("Data received:", data);
@@ -65,29 +74,27 @@ function init(){
     });
 }
 
-function connectToPeer(){
-    // Connect to another user if GET param is there
-    peerId = urlParams.get('peer');
-    if(peerId){
-         // Close the current connection
-         if(connection){ connection.close(); }
+function connectToPeer(peerId){
+     // Close the current connection
+     if(connection){ connection.close(); }
 
-         connection = peer.connect(peerId, {
-             reliable: true
-         });
+     connection = peer.connect(peerId, {
+         reliable: true
+     });
 
-         connection.on('open', function(){
-            console.log("Connected to peer:", peerId);
-         });
+     connection.on('open', function(){
+        console.log("Connected to peer:", peerId);
+        peerIdElem.innerHTML = "Peer's ID: " + peerId;
+     });
 
-         connection.on('data', function(data){
-             console.log("Data received:", data);
-         });
+     connection.on('data', function(data){
+         console.log("Data received:", data);
+     });
 
-         connection.on('close', function(){
-             console.log("Connection Closed");
-             connection = null;
-             peerId = null;
-         });
-    }
+     connection.on('close', function(){
+         console.log("Connection Closed");
+         connection = null;
+         peerId = null;
+         peerIdElem.innerHTML = "Peer's ID:";
+     });
 }
