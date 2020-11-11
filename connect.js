@@ -4,6 +4,10 @@ var peer = null;
 var myId = null;
 var connection = null;
 
+// Mouse positions (in range [0-1] as percent)
+var myMouse = {x: 0, y:0};
+var peerMouse = {x:0, y:0};
+
 // HTML Elements
 var myIdElem = null;
 var peerIdElem = null;
@@ -20,12 +24,16 @@ window.addEventListener("load", function(){
     init();
 
     document.onmousemove = function(event){
+        myMouse.x = event.clientX / window.innerWidth;
+        myMouse.y = event.clientY / window.innerHeight;
         if(connection && connection.open){
             connection.send({
-                mouseX: event.clientX / window.innerWidth,
-                mouseY: event.clientY / window.innerHeight
+                mouseX: myMouse.x,
+                mouseY: myMouse.y
             })
         }
+
+        adjustSound();
     }
 });
 
@@ -84,8 +92,11 @@ function onConnection(){
     });
 
     connection.on('data', function(data){
-        console.log("Data received:", data);
-        moveDot(data.mouseX*window.innerWidth, data.mouseY*window.innerHeight);
+        // console.log("Data received:", data);
+        peerMouse.x = data.mouseX;
+        peerMouse.y = data.mouseY;
+        moveDot(peerMouse.x * window.innerWidth, peerMouse.y * window.innerHeight);
+        adjustSound();
     });
 
     connection.on('close', function(){
