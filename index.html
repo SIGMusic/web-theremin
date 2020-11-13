@@ -1,12 +1,28 @@
 <!DOCTYPE HTML>
 <html>
     <head>
-        <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/tone@14.7.58/build/Tone.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/peerjs@1.2.0/dist/peerjs.min.js"></script>
         <script src = "connect.js"></script>
+        <script src = "sound.js"></script>
+
+        <style>
+            #dot{
+                height: 25px;
+                width: 25px;
+                background-color: #ff0000;
+                border-radius: 50%;
+                position: absolute;
+            }
+        </style>
     </head>
     <body>
         <div id = "container">
-            
+            <p id = "myId">Your ID:</p>
+            <p id = "peerId">Peer's ID:</p>
+            <a id = "inviteLink" href = "#">Invite Link</a>
+
+            <div id="dot"></div>
         </div>
     </body>
 </html>
