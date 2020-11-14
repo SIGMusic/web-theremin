@@ -42,7 +42,7 @@ function init(){
     // Have PeerJS only print errors
     peer = new Peer(null, {
         debug: 1,
-        host: 'https://web-theremin-peer-js-server.herokuapp.com/',
+        host: 'web-theremin-peer-js-server.herokuapp.com',
         port: 9000,
         path: '/',
         key: 'Ueyie7OhgieSoh2wkeed2ShaFahhae9c'
