@@ -41,11 +41,11 @@ window.addEventListener("load", function(){
 function init(){
     // Have PeerJS only print errors
     peer = new Peer(null, {
-        debug: 1,
+        debug: 2,
         host: 'web-theremin-peer-js-server.herokuapp.com',
-        port: 9000,
+        port: 80,
         path: '/',
-        key: 'Ueyie7OhgieSoh2wkeed2ShaFahhae9c'
+        key: 'CheR4uo4'
     });
     peer.on('open', function(id){
         myId = id;
