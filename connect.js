@@ -15,9 +15,6 @@ var inviteLinkElem = null;
 var dotElem = null;
 
 window.addEventListener("load", function(){
-<<<<<<< HEAD
-    let peer = new Peer();
-=======
     // HTML Elements
     myIdElem = document.getElementById("myId");
     peerIdElem = document.getElementById("peerId");
@@ -26,7 +23,6 @@ window.addEventListener("load", function(){
 
     init();
 
->>>>>>> sahil
     document.onmousemove = function(event){
         myMouse.x = event.clientX / window.innerWidth;
         myMouse.y = event.clientY / window.innerHeight;
@@ -44,7 +40,13 @@ window.addEventListener("load", function(){
 // Initializes Peer-to-Peer connection
 function init(){
     // Have PeerJS only print errors
-    peer = new Peer(null, {debug: 1});
+    peer = new Peer(null, {
+        debug: 1,
+        host: 'https://web-theremin-peer-js-server.herokuapp.com/',
+        port: 9000,
+        path: '/',
+        key: 'Ueyie7OhgieSoh2wkeed2ShaFahhae9c'
+    });
     peer.on('open', function(id){
         myId = id;
         myIdElem.innerHTML = "Your ID: " + myId;
