@@ -15,7 +15,8 @@ interface Props extends RouteComponentProps<MatchParams> { }
 const Routing = () => (
   <Router>
     <Route
-      path="/:roomCode"
+      exact
+      path={`${process.env.NODE_ENV === 'production' ? '/web-theremin' : ''}/:roomCode`}
       render={(props: Props) => {
         const { roomCode } = props.match.params;
         const parsed = queryString.parse(props.location.search);
@@ -24,7 +25,8 @@ const Routing = () => (
       }}
     />
     <Route
-      path="/"
+      exact
+      path={`${process.env.NODE_ENV === 'production' ? '/web-theremin' : ''}/`}
       render={(props: Props) => <LandingPage {...props} />}
     />
   </Router>

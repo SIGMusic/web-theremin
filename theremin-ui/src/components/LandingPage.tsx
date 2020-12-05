@@ -66,7 +66,7 @@ class LandingPage extends React.Component<Props, State> {
   joinRoom = ({ roomCode, host }: JoinRoomParams) => {
     const { history } = this.props;
     const hostString = host ? '?host=true' : '';
-    history.push(`/${process.env.NODE_ENV === 'production' ? 'web-theremin/' : ''}${roomCode}${hostString}`);
+    history.push(`${process.env.NODE_ENV === 'production' ? '/web-theremin' : ''}/${roomCode}${hostString}`);
   };
 
   /**
