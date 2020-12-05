@@ -15,7 +15,7 @@ interface Props extends RouteComponentProps<MatchParams> { }
 const Routing = () => (
   <Router>
     <Route
-      path="/room/:roomCode"
+      path="/:roomCode"
       render={(props: Props) => {
         const { roomCode } = props.match.params;
         const parsed = queryString.parse(props.location.search);
