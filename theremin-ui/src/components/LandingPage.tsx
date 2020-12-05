@@ -11,6 +11,11 @@ import Message, { TIMEOUT } from 'utils/Message';
 import 'styles/LandingPage.css';
 
 
+interface JoinRoomParams {
+  roomCode: string;
+  host: boolean;
+}
+
 interface Props extends RouteComponentProps { }
 
 interface State {
@@ -57,9 +62,10 @@ class LandingPage extends React.Component<Props, State> {
    *
    * This function loads a new page.
    */
-  joinRoom = (roomCode: string) => {
+  joinRoom = ({ roomCode, host }: JoinRoomParams) => {
     const { history } = this.props;
-    history.push(`/room/${roomCode}`);
+    const hostString = host ? '?host=true' : '';
+    history.push(`/room/${roomCode}${hostString}`);
   };
 
   /**
@@ -75,7 +81,7 @@ class LandingPage extends React.Component<Props, State> {
     });
 
     const roomCode = this.generateRoomCode();
-    this.joinRoom(roomCode);
+    this.joinRoom({ roomCode, host: true });
   };
 
   /**
@@ -91,7 +97,7 @@ class LandingPage extends React.Component<Props, State> {
     });
 
     const { roomCode } = this.state;
-    this.joinRoom(roomCode);
+    this.joinRoom({ roomCode, host: false });
   };
 
 

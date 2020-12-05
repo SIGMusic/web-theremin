@@ -3,6 +3,8 @@ import Peer, { DataConnection } from 'peerjs';
 export interface ChannelParams {
   /* The room code to send/receive messages. */
   roomCode: string;
+  /* True if the user created this room from the landing page. */
+  host: boolean;
   /* Called when connection closed. */
   onClose: () => void;
   /* Called when data is received. */
@@ -17,20 +19,44 @@ export interface ChannelParams {
  * Object allowing for the transmission of messages.
  */
 export default class Channel {
-  connection: DataConnection | null = null;
-  peer: Peer | null = null;
-  onClose: () => void;
-  onData: (data: any) => void;
-  onError: (error: any) => void;
-  onOpen: () => void;
+  private connection: DataConnection | null = null;
+  private peer: Peer | null = null;
+  private onClose: () => void;
+  private onData: (data: any) => void;
+  private onError: (error: any) => void;
+  private onOpen: () => void;
 
-  constructor({ roomCode, onData }: ChannelParams) {
-    // Have PeerJS only print errors
+  constructor(params: ChannelParams) {
+    const {
+      roomCode,
+      host,
+      onClose,
+      onData,
+      onError,
+      onOpen,
+    } = params;
+
+    this.onClose = onClose;
     this.onData = onData;
-    this.peer = new Peer(roomCode, {
-      debug: 1,
+    this.onError = onError;
+    this.onOpen = onOpen;
+
+    // Have PeerJS only print errors.
+    this.peer = new Peer(host ? roomCode : undefined, {
+      host: 'localhost',
+      port: 9000,
+      path: '/theremin',
+      debug: 3,
     });
     this.setHandlers();
+
+    if (!host) {
+      console.log(`Trying to connect to peer ${roomCode}.`);
+      this.connection = this.peer.connect(roomCode);
+      console.log('connection', this.connection);
+      this.setConnectionHandlers();
+      console.log('setConnectionHandlers');
+    }
   }
 
   /**
@@ -46,6 +72,9 @@ export default class Channel {
   private setHandlers = () => {
     this.peer!.on('open', this.connectToRoom);
     this.peer!.on('connection', this.onConnection);
+    this.peer!.on('error', console.error);
+    this.peer!.on('close', () => console.log('closing ...'));
+    this.peer!.on('disconnected', () => console.log('disconnected ...'));
   };
 
   private connectToRoom = () => {
@@ -58,6 +87,8 @@ export default class Channel {
   };
 
   private setConnectionHandlers = () => {
+    if (this.connection === null) return;
+
     console.log('Connected to:', this.connection!.peer);
 
     this.connection!.on('close', () => {
@@ -65,9 +96,18 @@ export default class Channel {
       this.connection = null;
       this.onClose();
     });
-    this.connection!.on('data', this.onData);
-    this.connection!.on('error', this.onError);
-    this.connection!.on('open', this.onOpen);
+    this.connection!.on('data', d => {
+      console.log(' data ... ', d);
+      this.onData(d);
+    });
+    this.connection!.on('error', e => {
+      console.error(' error ... ', e);
+      this.onError(e);
+    });
+    this.connection!.on('open', () => {
+      console.log(' open ... ');
+      this.onOpen();
+    });
   };
 
   private onConnection = (connection: DataConnection) => {

@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { BrowserRouter as Router, Route, RouteComponentProps } from 'react-router-dom';
+import queryString from 'query-string';
 
 import LandingPage from 'components/LandingPage';
 import Room from 'components/Room';
@@ -18,7 +19,9 @@ const Routing = () => (
       path="/room/:roomCode"
       render={(props: Props) => {
         const { roomCode } = props.match.params;
-        return <Room {...props} roomCode={roomCode} />;
+        const parsed = queryString.parse(props.location.search);
+        const host = parsed.host === 'true';
+        return <Room {...props} roomCode={roomCode} host={host} />;
       }}
     />
     <Route

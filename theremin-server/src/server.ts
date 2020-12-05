@@ -1,43 +1,42 @@
 #!/usr/bin/env node
 import 'module-alias/register';
 import dotenv from 'dotenv';
-import express, { Express } from 'express';
-import { ExpressPeerServer } from 'peer';
-import cors from 'cors';
+import { PeerServer } from 'peer';
+import { Server } from 'net';
 
 
 dotenv.config();
 
-const { PATH = '/theremin', PORT = '5000' } = process.env;
+const { PATH = '/theremin', PORT = '9000' } = process.env;
 
-const startServer = (app: Express) => {
-  const port = Number.parseInt(PORT, 10);
-  const path = PATH.trim();
+const onServerRunning = (server: Server) => {
+  if (server === null) {
+    console.error('server not started :(');
+    return;
+  }
 
-  const server = app.listen(PORT);
-  const peerServer = ExpressPeerServer(server, {
-    port,
-    path,
-    allow_discovery: true,
-  });
+  const addr = server.address();
+  if (addr === null || typeof addr === 'string') {
+    console.error('address not found :(');
+    return;
+  }
 
-  app.use('/', peerServer);
-
-  return server;
+  const { address, port } = addr;
+  console.log(`Started PeerServer on ${address}, port: ${port}`);
 };
 
-const app = express();
-const server = startServer(app);
+const startServer = () => {
+  const port = Number.parseInt(PORT, 10);
+  const path = PATH.trim();
+  return PeerServer({ port, path, key: 'peerjs' }, onServerRunning);
+};
 
-server.on('listening', () => console.info('listening ...'));
-server.on('connection', client => console.info('CONNECTED id', client.address()));
-server.on('disconnect', client => console.info('DISCONNECTED id', client.address()));
-server.on('close', () => console.error('closed'));
+const server = startServer();
 
-app.use(
-  cors({
-    credentials: true,
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT'],
-  }),
-);
+server.on('connection', client => {
+  console.log(`Client connected: ${client.getId()}`);
+});
+
+server.on('disconnect', client => {
+  console.log(`Client disconnected: ${client.getId()}`);
+});

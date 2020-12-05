@@ -7,6 +7,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: black;
   font-family: 'Roboto Mono', monospace;
+  height: 100%;
 }
 
 code {
@@ -14,7 +15,11 @@ code {
     monospace;
 }
 
-div#root {
-  width: 100%;
+html {
   height: 100%;
+}
+
+div#root {
+  width: 100vw;
+  height: 100vh;
 }

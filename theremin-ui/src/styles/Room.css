@@ -23,6 +23,11 @@
   height: 0.5rem;
 }
 
+.full {
+  height: 100%;
+  padding: 0px;
+}
+
 /*
 .bp3-progress-meter {
   background-color: #fff !important;
