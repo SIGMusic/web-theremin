@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 import {
   ProgressBar, InputGroup, Button, Intent, FormGroup, Tooltip, H5, Slider,
