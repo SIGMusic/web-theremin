@@ -15,7 +15,6 @@ interface Props extends RouteComponentProps<MatchParams> { }
 const Routing = () => (
   <Router>
     <Route
-      exact
       path="/room/:roomCode"
       render={(props: Props) => {
         const { roomCode } = props.match.params;
@@ -25,7 +24,6 @@ const Routing = () => (
       }}
     />
     <Route
-      exact
       path="/"
       render={(props: Props) => <LandingPage {...props} />}
     />
