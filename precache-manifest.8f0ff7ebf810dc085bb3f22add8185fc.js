@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "4cc575c00eeedc5693ba4623c8a82853",
+    "revision": "4866517fd69351b4e73ac19c6555b882",
     "url": "/web-theremin/index.html"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/web-theremin/static/css/2.d65ed4c3.chunk.css"
   },
   {
-    "revision": "574950fdc8194173240a",
+    "revision": "a7ead2dd528f3ca49a04",
     "url": "/web-theremin/static/css/main.bd649600.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/web-theremin/static/js/2.3abd9afa.chunk.js"
   },
   {
-    "revision": "574950fdc8194173240a",
-    "url": "/web-theremin/static/js/main.c2049530.chunk.js"
+    "revision": "a7ead2dd528f3ca49a04",
+    "url": "/web-theremin/static/js/main.b7153eab.chunk.js"
   },
   {
     "revision": "a43fd6b36c4b737c0307",
