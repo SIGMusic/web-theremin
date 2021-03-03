@@ -4,17 +4,17 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import {
   Button, Intent, InputGroup, Popover, Menu, MenuItem, Position,
 } from '@blueprintjs/core';
-import randomstring from 'randomstring';
 
-
+import Room from 'components/Room';
 import Message, { TIMEOUT } from 'utils/Message';
+import Channel from 'utils/connect';
 
 import 'styles/LandingPage.css';
 
-
-interface JoinRoomParams {
-  roomCode: string;
-  host: boolean;
+enum Action {
+  WaitingForId,
+  ReadyToJoinRoom,
+  JoiningRoom,
 }
 
 interface Props extends RouteComponentProps { }
@@ -25,7 +25,8 @@ interface State {
    */
   creatingNewRoom: boolean;
   /* The room code typed into the text box by the user. */
-  roomCode: string;
+  peerId: string;
+  action: Action;
 }
 
 
@@ -35,38 +36,40 @@ interface State {
  * in the url.
  */
 class LandingPage extends React.Component<Props, State> {
+  private channel: Channel;
+
   constructor(props: Props) {
     super(props);
 
+    this.channel = new Channel({ onIdGiven: this.onIdGiven });
+
     this.state = {
-      creatingNewRoom: true,
-      roomCode: '',
+      creatingNewRoom: false,
+      peerId: '',
+      action: Action.WaitingForId,
     };
   }
 
   componentDidMount = () => { };
 
-  /**
-   * Generates a random alphanumeric string.
-   */
-  generateRoomCode = () => (
-    randomstring.generate({
-      length: 5,
-      charset: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-    })
-  );
+  onIdGiven = () => {
+    this.setState({
+      action: Action.ReadyToJoinRoom,
+    });
+  };
+
 
   /**
    * Join a room.
    *
-   * @param roomCode - the code of the room to join.
+   * @param peerId - the code of the room to join.
    *
    * This function loads a new page.
    */
-  joinRoom = ({ roomCode, host }: JoinRoomParams) => {
-    const { history } = this.props;
-    const hostString = host ? '?host=true' : '';
-    history.push(`${process.env.NODE_ENV === 'production' ? '/web-theremin' : ''}/${roomCode}${hostString}`);
+  joinRoom = () => {
+    this.setState({
+      action: Action.JoiningRoom,
+    });
   };
 
   /**
@@ -81,8 +84,7 @@ class LandingPage extends React.Component<Props, State> {
       intent: Intent.PRIMARY,
     });
 
-    const roomCode = this.generateRoomCode();
-    this.joinRoom({ roomCode, host: true });
+    this.joinRoom();
   };
 
   /**
@@ -97,8 +99,11 @@ class LandingPage extends React.Component<Props, State> {
       intent: Intent.PRIMARY,
     });
 
-    const { roomCode } = this.state;
-    this.joinRoom({ roomCode, host: false });
+    // We need to create a new channel.
+    const { peerId } = this.state;
+    this.channel = new Channel({ peerId });
+
+    this.joinRoom();
   };
 
 
@@ -120,16 +125,21 @@ class LandingPage extends React.Component<Props, State> {
    * Update the room code while the user types.
    */
   onCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newRoomCode = e.target.value.toUpperCase();
+    const newPeerId = e.target.value;
     const { target } = e;
     const { selectionStart, selectionEnd } = target;
     return this.setState({
-      roomCode: newRoomCode,
+      peerId: newPeerId,
     }, () => target.setSelectionRange(selectionStart || 0, selectionEnd || 0));
   };
 
   render = () => {
-    const { creatingNewRoom, roomCode } = this.state;
+    const { creatingNewRoom, peerId, action } = this.state;
+
+    if (action === Action.JoiningRoom) {
+      return <Room channel={this.channel} />;
+    }
+
     const newOrExistingRoomMenu = (
       <Popover
         content={(
@@ -159,17 +169,19 @@ class LandingPage extends React.Component<Props, State> {
         <InputGroup
           disabled={creatingNewRoom}
           large
-          placeholder="JM4W7"
+          placeholder=""
           rightElement={newOrExistingRoomMenu}
           onChange={this.onCodeChange}
-          value={roomCode}
+          value={peerId}
         />
+        {action !== Action.WaitingForId &&
         <Button
           large
           intent={Intent.PRIMARY}
           text="Launch!"
           onClick={creatingNewRoom ? this.launchNewRoom : this.joinExistingRoom}
         />
+        }
       </div>
     );
   };

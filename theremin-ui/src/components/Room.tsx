@@ -43,8 +43,7 @@ enum Stage {
 }
 
 interface Props {
-  roomCode: string;
-  host: boolean;
+  channel: Channel;
 }
 
 interface State {
@@ -68,12 +67,23 @@ const calcColor = (sound: Sound) => {
 };
 
 export default class Room extends React.Component<Props, State> {
-  channel: Channel | null = null;
+  channel: Channel;
   osc: Tone.Oscillator;
   screenRef: React.RefObject<HTMLDivElement>;
+  peerLocation: Location;
 
   constructor(props: Props) {
     super(props);
+    const { channel } = props;
+
+    this.peerLocation = { x: 0, y: 0 };
+    this.channel = channel;
+    this.channel.openRoom({
+      onClose: this.onClose,
+      onData: this.onData,
+      onError: this.onError,
+      onOpen: this.onOpen,
+    });
 
     this.osc = new Tone
       .Oscillator({ type: kWaveType, frequency: kInitFreq, volume: kInitVol })
@@ -88,7 +98,8 @@ export default class Room extends React.Component<Props, State> {
   private onOpen = () => {
     console.log('opened connection.');
     console.log('sending greeting.');
-    this.channel!.sendData({ message: 'hi' });
+    const sent = this.channel!.sendData({ message: 'hi' });
+    console.log(`sent successfully? ${sent}`);
   };
 
   private onError = (error: any) => {
@@ -101,6 +112,8 @@ export default class Room extends React.Component<Props, State> {
 
   private onData = (data: any) => {
     console.log(`data received: ${data}`);
+    const peerLocation = data as Location;
+    this.peerLocation = peerLocation;
   };
 
   private onMouseDown = () => {
@@ -118,19 +131,14 @@ export default class Room extends React.Component<Props, State> {
   };
 
   /**
-   * Takes the average location and converts to a sound.
+   * Takes the average _normalized_ location and converts to a sound.
    */
   private locsToSound = (locs: Location[]): Sound | null => {
-    const { current } = this.screenRef;
-    // Somehow the rectangle cannot be found.
-    if (current === null) return null;
-
-    const { height, width } = current.getBoundingClientRect();
-    console.log(height, width);
+    // console.log(height, width);
     /* Mean of a list. */
     const mean = (zs: number[]) => zs.reduce((a, b) => a + b) / zs.length;
-    const xs = locs.map(({ x }) => x / width);
-    const ys = locs.map(({ y }) => y / height);
+    const xs = locs.map(({ x }) => x);
+    const ys = locs.map(({ y }) => y);
     const x = mean(xs);
     const y = mean(ys);
 
@@ -141,18 +149,39 @@ export default class Room extends React.Component<Props, State> {
     return { frequency, volume };
   };
 
+  /**
+   * Converts the (x,y) location on the screen into the range [0,1]x[0,1].
+   */
+  private normalize = (location: Location): Location | null => {
+    const { current } = this.screenRef;
+    // Somehow the rectangle cannot be found.
+    if (current === null) return null;
+
+    const { height, width } = current.getBoundingClientRect();
+    const { x, y } = location;
+    return { x: x / width, y: y / height };
+  };
 
   private onMouseMove = (event: MouseEvent) => {
-    const { x, y } = event;
+    const normalized = this.normalize({ x: event.x, y: event.y });
+    if (normalized === null) return;
 
+    this.updateSound(normalized);
+  }
+
+  private updateSound = (location: Location) => {
     const sound = this.locsToSound([
-      { x, y },
+      location, this.peerLocation,
     ]);
     // Cursor is off of the screen.
     if (sound === null) return;
 
+    // Send this data to the peer!
+    const sent = this.channel.sendData(location);
+    console.log(`sent successfully? ${sent}`);
+
     const { frequency, volume } = sound;
-    console.log(`(${x}, ${y}) => ${frequency} Hz, ${volume} db`);
+    // console.log(`(${x}, ${y}) => ${frequency} Hz, ${volume} db`);
 
     this.osc.frequency.value = frequency;
     this.osc.volume.value = volume;
@@ -165,20 +194,6 @@ export default class Room extends React.Component<Props, State> {
   };
 
   componentDidMount = () => {
-    // TODO(davidb2): incorporate peer.
-    /*
-    const { roomCode, host } = this.props;
-
-    this.channel = new Channel({
-      roomCode,
-      host,
-      onClose: this.onClose,
-      onData: this.onData,
-      onError: this.onError,
-      onOpen: this.onOpen,
-    });
-    */
-
     Message.show({
       timeout: TIMEOUT,
       message: 'Successfully joined room',
@@ -202,7 +217,7 @@ export default class Room extends React.Component<Props, State> {
 
   render = () => {
     const { stage, color } = this.state;
-    console.log(color);
+    // console.log(color);
     return (
       <div
         className="full"
@@ -213,6 +228,7 @@ export default class Room extends React.Component<Props, State> {
           borderStyle: 'solid',
         }}
       >
+        <h1>{this.channel.id}</h1>
         {stage === Stage.Loading && <Spinner />}
       </div>
     );
