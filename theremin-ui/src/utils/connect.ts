@@ -114,7 +114,6 @@ export default class Channel {
       this.onClose();
     });
     this.connection!.on('data', d => {
-      console.log(' data ... ', d);
       this.onData(d);
     });
     this.connection!.on('error', e => {

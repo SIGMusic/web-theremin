@@ -98,8 +98,6 @@ export default class Room extends React.Component<Props, State> {
   private onOpen = () => {
     console.log('opened connection.');
     console.log('sending greeting.');
-    const sent = this.channel!.sendData({ message: 'hi' });
-    console.log(`sent successfully? ${sent}`);
   };
 
   private onError = (error: any) => {
@@ -111,7 +109,7 @@ export default class Room extends React.Component<Props, State> {
   };
 
   private onData = (data: any) => {
-    console.log(`data received: ${data}`);
+    // console.log(`data received: ${data}`);
     const peerLocation = data as Location;
     this.peerLocation = peerLocation;
   };
@@ -170,15 +168,17 @@ export default class Room extends React.Component<Props, State> {
   }
 
   private updateSound = (location: Location) => {
+    // console.log('location', location, 'peerLocation', this.peerLocation);
     const sound = this.locsToSound([
       location, this.peerLocation,
     ]);
+    // console.log('sound', sound);
     // Cursor is off of the screen.
     if (sound === null) return;
 
     // Send this data to the peer!
     const sent = this.channel.sendData(location);
-    console.log(`sent successfully? ${sent}`);
+    // console.log(`sent successfully? ${sent}`);
 
     const { frequency, volume } = sound;
     // console.log(`(${x}, ${y}) => ${frequency} Hz, ${volume} db`);
