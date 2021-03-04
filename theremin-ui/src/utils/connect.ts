@@ -42,7 +42,7 @@ export default class Channel {
     this.peerId = peerId || null;
 
     // Have PeerJS only print errors.
-    this.peer = new Peer(undefined, { debug: 3 });
+    this.peer = new Peer(undefined, { debug: 1 });
     this.setHandlers();
   }
 

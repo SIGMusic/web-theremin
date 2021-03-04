@@ -70,6 +70,7 @@ export default class Room extends React.Component<Props, State> {
   channel: Channel;
   osc: Tone.Oscillator;
   screenRef: React.RefObject<HTMLDivElement>;
+  myLocation: Location;
   peerLocation: Location;
 
   constructor(props: Props) {
@@ -77,6 +78,7 @@ export default class Room extends React.Component<Props, State> {
     const { channel } = props;
 
     this.peerLocation = { x: 0, y: 0 };
+    this.myLocation = { x: 0, y: 0 };
     this.channel = channel;
     this.channel.openRoom({
       onClose: this.onClose,
@@ -164,20 +166,21 @@ export default class Room extends React.Component<Props, State> {
     const normalized = this.normalize({ x: event.x, y: event.y });
     if (normalized === null) return;
 
-    this.updateSound(normalized);
+    this.myLocation = normalized;
+    this.updateSound();
   }
 
-  private updateSound = (location: Location) => {
+  private updateSound = () => {
     // console.log('location', location, 'peerLocation', this.peerLocation);
     const sound = this.locsToSound([
-      location, this.peerLocation,
+      this.myLocation, this.peerLocation,
     ]);
     // console.log('sound', sound);
     // Cursor is off of the screen.
     if (sound === null) return;
 
     // Send this data to the peer!
-    const sent = this.channel.sendData(location);
+    const sent = this.channel.sendData(this.myLocation);
     // console.log(`sent successfully? ${sent}`);
 
     const { frequency, volume } = sound;
