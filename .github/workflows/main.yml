@@ -23,7 +23,7 @@ jobs:
     - name: Build
       run: |
         yarn install
-        yarn run build
+        CI=false yarn run build
       env:
         REACT_APP_QKT_HOST: ${{ secrets.REACT_APP_THEREMIN_HOST }}
         REACT_APP_QKT_PORT: ${{ secrets.REACT_APP_THEREMIN_PORT }}
