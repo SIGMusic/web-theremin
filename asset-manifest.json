@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/web-theremin/static/css/main.11a784c7.chunk.css",
-    "main.js": "/web-theremin/static/js/main.6af19621.chunk.js",
-    "main.js.map": "/web-theremin/static/js/main.6af19621.chunk.js.map",
+    "main.css": "/web-theremin/static/css/main.967425f7.chunk.css",
+    "main.js": "/web-theremin/static/js/main.3db98c18.chunk.js",
+    "main.js.map": "/web-theremin/static/js/main.3db98c18.chunk.js.map",
     "runtime-main.js": "/web-theremin/static/js/runtime-main.4680cc19.js",
     "runtime-main.js.map": "/web-theremin/static/js/runtime-main.4680cc19.js.map",
     "static/css/2.d65ed4c3.chunk.css": "/web-theremin/static/css/2.d65ed4c3.chunk.css",
     "static/js/2.7becc3fc.chunk.js": "/web-theremin/static/js/2.7becc3fc.chunk.js",
     "static/js/2.7becc3fc.chunk.js.map": "/web-theremin/static/js/2.7becc3fc.chunk.js.map",
     "index.html": "/web-theremin/index.html",
-    "precache-manifest.592619fcbfc7dd45d6d622785d467d2f.js": "/web-theremin/precache-manifest.592619fcbfc7dd45d6d622785d467d2f.js",
+    "precache-manifest.0ba4bae087bfb113d75c2299a8256e8a.js": "/web-theremin/precache-manifest.0ba4bae087bfb113d75c2299a8256e8a.js",
     "service-worker.js": "/web-theremin/service-worker.js",
     "static/css/2.d65ed4c3.chunk.css.map": "/web-theremin/static/css/2.d65ed4c3.chunk.css.map",
-    "static/css/main.11a784c7.chunk.css.map": "/web-theremin/static/css/main.11a784c7.chunk.css.map"
+    "static/css/main.967425f7.chunk.css.map": "/web-theremin/static/css/main.967425f7.chunk.css.map"
   }
 }
