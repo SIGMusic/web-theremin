@@ -114,6 +114,7 @@ export default class Room extends React.Component<Props, State> {
     // console.log(`data received: ${data}`);
     const peerLocation = data as Location;
     this.peerLocation = peerLocation;
+    this.updateSound();
   };
 
   private onMouseDown = () => {
