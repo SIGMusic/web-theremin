@@ -43,8 +43,9 @@ export default class Channel {
 
     // Have PeerJS only print errors.
     this.peer = new Peer(undefined, {
+      secure: true,
       host: 'web-theremin-peer-js-server.herokuapp.com',
-      port: 80,
+      port: 443,
       key: 'CheR4uo4',
       debug: 1,
     });
