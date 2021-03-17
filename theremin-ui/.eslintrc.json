@@ -11,7 +11,10 @@
     "no-unused-vars": "off",
     "eol-last": "off",
     "lines-between-class-members": "off",
-    "class-methods-use-this": "off"
+    "class-methods-use-this": "off",
+    "options": {
+      "emitWarning": true
+    }
   },
   "settings": {
     "import/resolver": {
