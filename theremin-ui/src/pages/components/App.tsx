@@ -11,6 +11,7 @@ import 'styles/App.css';
 
 dotenv.config();
 
+/** A wrapper for the main web app. */
 const App = () => (
   <div
     className={`App ${Classes.DARK}`}

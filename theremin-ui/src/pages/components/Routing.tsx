@@ -10,6 +10,10 @@ interface MatchParams {
 
 interface Props extends RouteComponentProps<MatchParams> { }
 
+/**
+ * Handles client-side routing. Currently, everything routes to the landing
+ * page.
+ */
 const Routing = () => (
   <Router>
     <Route

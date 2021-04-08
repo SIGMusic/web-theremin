@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import {
@@ -6,11 +5,14 @@ import {
 } from '@blueprintjs/core';
 
 import Room from 'pages/components/Room';
-import Message, { TIMEOUT } from 'misc/utils/Message';
+import Message, { kTimeout } from 'misc/utils/Message';
 import Channel from 'networking/utils/connect';
 
 import 'styles/LandingPage.css';
 
+/**
+ * The status of the user.
+ */
 enum Action {
   WaitingForId,
   ReadyToJoinRoom,
@@ -20,15 +22,15 @@ enum Action {
 interface Props extends RouteComponentProps { }
 
 interface State {
-  /* Toggle for determining whether the user wants to create a new room or join
-   * an existing room.
+  /**
+   * Toggle for determining whether the user wants to create a new room or
+   * join an existing room.
    */
   creatingNewRoom: boolean;
-  /* The room code typed into the text box by the user. */
+  /** The room code typed into the text box by the user. */
   peerId: string;
   action: Action;
 }
-
 
 /**
  * Represents the LandingPage that the user will initially see when navigating
@@ -52,12 +54,14 @@ class LandingPage extends React.Component<Props, State> {
 
   componentDidMount = () => { };
 
+  /**
+   * Called after an id is assigned to the user.
+   */
   onIdGiven = () => {
     this.setState({
       action: Action.ReadyToJoinRoom,
     });
   };
-
 
   /**
    * Join a room.
@@ -78,7 +82,7 @@ class LandingPage extends React.Component<Props, State> {
    */
   launchNewRoom = () => {
     Message.show({
-      timeout: TIMEOUT,
+      timeout: kTimeout,
       message: 'Launching new room ...',
       icon: 'drawer-left',
       intent: Intent.PRIMARY,
@@ -89,11 +93,10 @@ class LandingPage extends React.Component<Props, State> {
 
   /**
    * Joins a room using the room code specified in the input box.
-   *
    */
   joinExistingRoom = () => {
     Message.show({
-      timeout: TIMEOUT,
+      timeout: kTimeout,
       message: 'Joining existing room ...',
       icon: 'drawer-left',
       intent: Intent.PRIMARY,
@@ -145,11 +148,11 @@ class LandingPage extends React.Component<Props, State> {
         content={(
           <Menu>
             <MenuItem
-              text="Create New Room"
+              text='Create New Room'
               onClick={() => this.setNewRoom(true)}
             />
             <MenuItem
-              text="Join Existing Room"
+              text='Join Existing Room'
               onClick={() => this.setNewRoom(false)}
             />
           </Menu>
@@ -157,7 +160,7 @@ class LandingPage extends React.Component<Props, State> {
         position={Position.BOTTOM_RIGHT}
       >
         <Button
-          rightIcon="caret-down"
+          rightIcon='caret-down'
           text={creatingNewRoom ? 'Create New Room' : 'Join Existing Room'}
         />
       </Popover>
@@ -169,7 +172,7 @@ class LandingPage extends React.Component<Props, State> {
         <InputGroup
           disabled={creatingNewRoom}
           large
-          placeholder=""
+          placeholder=''
           rightElement={newOrExistingRoomMenu}
           onChange={this.onCodeChange}
           value={peerId}
@@ -178,7 +181,7 @@ class LandingPage extends React.Component<Props, State> {
         <Button
           large
           intent={Intent.PRIMARY}
-          text="Launch!"
+          text='Launch!'
           onClick={creatingNewRoom ? this.launchNewRoom : this.joinExistingRoom}
         />
         }
