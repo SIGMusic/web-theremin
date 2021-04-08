@@ -2,7 +2,7 @@ import React from 'react';
 
 import { BrowserRouter as Router, Route, RouteComponentProps } from 'react-router-dom';
 
-import LandingPage from 'components/LandingPage';
+import LandingPage from 'pages/components/LandingPage';
 
 interface MatchParams {
   roomCode: string;

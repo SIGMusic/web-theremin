@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import dotenv from 'dotenv';
 
-import App from 'components/App';
+import App from 'pages/components/App';
 import * as serviceWorker from 'scripts/serviceWorker';
 
 import 'styles/index.css';

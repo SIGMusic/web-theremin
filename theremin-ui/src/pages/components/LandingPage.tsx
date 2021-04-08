@@ -5,9 +5,9 @@ import {
   Button, Intent, InputGroup, Popover, Menu, MenuItem, Position,
 } from '@blueprintjs/core';
 
-import Room from 'components/Room';
-import Message, { TIMEOUT } from 'utils/Message';
-import Channel from 'utils/connect';
+import Room from 'pages/components/Room';
+import Message, { TIMEOUT } from 'misc/utils/Message';
+import Channel from 'networking/utils/connect';
 
 import 'styles/LandingPage.css';
 

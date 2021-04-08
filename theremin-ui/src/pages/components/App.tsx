@@ -4,7 +4,7 @@ import { Classes } from '@blueprintjs/core';
 
 import '@blueprintjs/core/lib/css/blueprint.css';
 
-import Routing from 'components/Routing';
+import Routing from 'pages/components/Routing';
 
 import 'styles/App.css';
 

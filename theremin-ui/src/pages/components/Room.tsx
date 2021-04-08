@@ -6,8 +6,8 @@ import {
 } from '@blueprintjs/core';
 import * as Tone from 'tone';
 
-import Message, { TIMEOUT } from 'utils/Message';
-import Channel, { ChannelParams } from 'utils/connect';
+import Message, { TIMEOUT } from 'misc/utils/Message';
+import Channel, { ChannelParams } from 'networking/utils/connect';
 import 'styles/Room.css';
 
 
