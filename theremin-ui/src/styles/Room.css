@@ -1,0 +1,38 @@
+.flash {
+  -webkit-animation-name: flash-animation;
+  -webkit-animation-duration: 0.3s;
+
+  animation-name: flash-animation;
+  animation-duration: 0.3s;
+}
+
+@-webkit-keyframes flash-animation {
+  from { background: black; }
+  to   { background: white; }
+}
+
+@keyframes flash-animation {
+  from { background: black; }
+  to   { background: white; }
+}
+
+.sb-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 0.5rem;
+}
+
+.full {
+  height: 100%;
+  padding: 0px;
+}
+
+/*
+.bp3-progress-meter {
+  background-color: #fff !important;
+}
+*/
+.bp3-progress-meter {
+  background-color: #000 !important;
+}
