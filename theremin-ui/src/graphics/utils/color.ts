@@ -1,3 +1,5 @@
+import { Shaders, Node, GLSL } from 'gl-react';
+
 import { kHDivisions, kInitFreq, Sound } from 'audio/utils/theremin';
 
 /**
