@@ -2,6 +2,8 @@ import * as Tone from 'tone';
 import { ToneOscillatorConstructorOptions } from 'tone/build/esm/source/oscillator/OscillatorInterface';
 import { Decibels, Frequency, Hertz } from 'tone/Tone/core/type/Units';
 
+import { Location } from 'misc/utils/location';
+
 /** Initial frequency (all the way left). */
 export const kInitFreq: Hertz = 440;
 /** Decibels per height. */
@@ -11,12 +13,6 @@ export const kHDivisions = 20;
 export type Sound = {
   frequency: Frequency;
   volume: Decibels;
-};
-
-/** Represents the location of a mouse cursor. */
-export type Location = {
-  x: number;
-  y: number;
 };
 
 export type ThereminParams = Partial<ToneOscillatorConstructorOptions>;

@@ -1,10 +1,12 @@
 import React from 'react';
 import { Surface } from 'gl-react-dom';
+import { Shaders, Node, GLSL } from 'gl-react';
 import { Intent, Spinner } from '@blueprintjs/core';
 
-import Theremin, { Location } from 'audio/utils/theremin';
+import Theremin from 'audio/utils/theremin';
 import { calcColor } from 'graphics/utils/color';
 import Mice from 'graphics/components/Mice';
+import { Location } from 'misc/utils/location';
 import Message, { kTimeout } from 'misc/utils/Message';
 import Channel from 'networking/utils/connect';
 import 'styles/Room.css';
@@ -26,6 +28,7 @@ interface Props {
 interface State {
   color: string;
   stage: Stage;
+  mouse: Location;
 }
 
 /**
@@ -61,6 +64,7 @@ export default class Room extends React.Component<Props, State> {
     this.state = {
       color: kBlack,
       stage: Stage.Loading,
+      mouse: { x: 0, y: 0 },
     };
 
   }
@@ -161,6 +165,9 @@ export default class Room extends React.Component<Props, State> {
 
     this.theremin.myLocation = normalized;
     this.updateSound(true);
+    this.setState({
+      mouse: this.theremin.myLocation,
+    });
   }
 
   /**
@@ -195,7 +202,7 @@ export default class Room extends React.Component<Props, State> {
    * Where everything comes together: spits out the HTML code.
    */
   render = () => {
-    const { stage, color } = this.state;
+    const { stage, color, mouse } = this.state;
     return (
       <div
         className='full'
@@ -208,8 +215,10 @@ export default class Room extends React.Component<Props, State> {
       >
         <h1>{this.channel.id}</h1>
         {stage === Stage.Loading && <Spinner />}
-        <Surface width={300} height={300}>
-          <Mice />
+        <Surface
+          width={300}
+          height={300}>
+          <Mice mouse={mouse} />
         </Surface>
       </div>
     );
