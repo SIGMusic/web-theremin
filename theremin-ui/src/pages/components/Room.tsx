@@ -1,31 +1,14 @@
 import React from 'react';
 import { Intent, Spinner } from '@blueprintjs/core';
-import * as Tone from 'tone';
 
+import Theremin, { Location } from 'audio/utils/theremin';
+import { calcColor } from 'graphics/utils/color';
 import Message, { kTimeout } from 'misc/utils/Message';
 import Channel from 'networking/utils/connect';
 import 'styles/Room.css';
 
 
-/** Initial frequency (all the way left). */
-const kInitFreq = 440;
-/** Decibels per height. */
-const kHDivisions = 20;
-const kWaveType = 'sine';
-const kInitVol = -10;
 const kBlack = '#000000';
-
-/** Represents the location of a mouse cursor. */
-type Location = {
-  x: number;
-  y: number;
-};
-
-/** Represents qualities of a sound. */
-type Sound = {
-  frequency: number;
-  volume: number;
-};
 
 /** The state of the theremin. */
 enum Stage {
@@ -43,39 +26,21 @@ interface State {
   stage: Stage;
 }
 
-// Converts a sound into a color of red.
-const calcColor = (sound: Sound) => {
-  // Recover x, y values.
-  const { frequency, volume } = sound;
-  const x = Math.log2(frequency / kInitFreq);
-  const y = volume / kHDivisions;
-
-  const clamp = (a: number, lo: number, hi: number) => (
-    Math.max(lo, Math.min(hi, a))
-  );
-  // Map x, y to the range {0, 1, ..., 255}.
-  const [xx, yy] = [x, y].map(p => Math.floor(clamp(256 * p, 0, 255)));
-  return `rgba(${xx},0,0,${y})`;
-};
-
 /**
  * A `Room` is the main playground for playing with the theremin.
  * On this page, users are able to see their peer's mouse location as well.
  */
 export default class Room extends React.Component<Props, State> {
   channel: Channel;
-  osc: Tone.Oscillator;
+  theremin: Theremin;
   screenRef: React.RefObject<HTMLDivElement>;
-  myLocation: Location;
-  peerLocation: Location;
 
   constructor(props: Props) {
     super(props);
     const { channel } = props;
-
-    this.peerLocation = { x: 0, y: 0 };
-    this.myLocation = { x: 0, y: 0 };
+    // Get the channel that was passed down.
     this.channel = channel;
+
     this.channel.openRoom({
       onClose: this.onClose,
       onData: this.onData,
@@ -83,14 +48,19 @@ export default class Room extends React.Component<Props, State> {
       onOpen: this.onOpen,
     });
 
-    this.osc = new Tone
-      .Oscillator({ type: kWaveType, frequency: kInitFreq, volume: kInitVol })
-      .toDestination();
+    this.theremin = new Theremin({
+      frequency: 440,
+      type: 'sine',
+      volume: -10,
+    });
+
     this.screenRef = React.createRef();
+
     this.state = {
       color: kBlack,
       stage: Stage.Loading,
     };
+
   }
 
   /**
@@ -119,15 +89,38 @@ export default class Room extends React.Component<Props, State> {
    */
   private onData = (data: any) => {
     const peerLocation = data as Location;
-    this.peerLocation = peerLocation;
-    this.updateSound();
+    this.theremin.peerLocation = peerLocation;
+    this.updateSound(false);
+  };
+
+  /**
+   * Updates the sound played. If  
+   * @param broadcast whether or not to broadcast location to peer if relevant.
+   * @returns 
+   */
+  private updateSound = (broadcast: boolean) => {
+    const sound = this.theremin.updateSound();
+
+    // Cursor is off of the screen.
+    if (sound === null) return;
+
+    // Send this data to the peer!
+    if (broadcast) {
+      this.channel.sendData(this.theremin.myLocation);
+    }
+
+    const { stage } = this.state;
+    if (stage !== Stage.Playing) return;
+
+    const color = calcColor(sound);
+    this.setState({ stage, color });
   };
 
   /**
    * Fired when the left mouse is released. Turns on theremin.
    */
   private onMouseDown = () => {
-    this.osc.start();
+    this.theremin.start();
     this.setState({
       stage: Stage.Playing,
     });
@@ -137,28 +130,10 @@ export default class Room extends React.Component<Props, State> {
    * Fired when the left mouse is released. Turns off theremin.
    */
   private onMouseUp = () => {
-    this.osc.stop();
+    this.theremin.stop();
     this.setState({
       stage: Stage.Muted,
     });
-  };
-
-  /**
-   * Takes the average _normalized_ location and converts to a sound.
-   */
-  private locsToSound = (locs: Location[]): Sound | null => {
-    // Mean of a list.
-    const mean = (zs: number[]) => zs.reduce((a, b) => a + b) / zs.length;
-    const xs = locs.map(({ x }) => x);
-    const ys = locs.map(({ y }) => y);
-    const x = mean(xs);
-    const y = mean(ys);
-
-    if (!(0 <= x && x <= 1 && 0 <= y && y <= 1)) return null;
-
-    const frequency = kInitFreq * (2 ** x);
-    const volume = kHDivisions * y;
-    return { frequency, volume };
   };
 
   /**
@@ -182,35 +157,9 @@ export default class Room extends React.Component<Props, State> {
     const normalized = this.normalize({ x: event.x, y: event.y });
     if (normalized === null) return;
 
-    this.myLocation = normalized;
-    this.updateSound();
+    this.theremin.myLocation = normalized;
+    this.updateSound(true);
   }
-
-  /**
-   * Updates the sound of the theremin and sends data to peer.
-   */
-  private updateSound = () => {
-    const sound = this.locsToSound([
-      this.myLocation, this.peerLocation,
-    ]);
-
-    // Cursor is off of the screen.
-    if (sound === null) return;
-
-    // Send this data to the peer!
-    this.channel.sendData(this.myLocation);
-
-    const { frequency, volume } = sound;
-
-    this.osc.frequency.value = frequency;
-    this.osc.volume.value = volume;
-
-    const { stage } = this.state;
-    if (stage !== Stage.Playing) return;
-
-    const color = calcColor(sound);
-    this.setState({ stage, color });
-  };
 
   /**
    * Initialization of UI code.
