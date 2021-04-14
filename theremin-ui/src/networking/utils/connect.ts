@@ -52,6 +52,7 @@ export default class Channel {
     this.setHandlers();
   }
 
+  /** The id of the user in this channel. */
   get id(): string | null { return this.myId; }
 
   /**
@@ -81,26 +82,30 @@ export default class Channel {
     return true;
   };
 
+  /**
+   * Sets up handlers.
+   */
   private setHandlers = () => {
     this.peer!.on('open', myId => {
-      console.log('open called');
       this.connectToRoom(myId);
     });
     this.peer!.on('connection', connection => {
-      console.log('connection called');
       this.onConnection(connection);
     });
     this.peer!.on('error', e => {
-      console.log('got an error ...');
       console.error('error', e);
     });
     this.peer!.on('close', () => console.log('closing ...'));
     this.peer!.on('disconnected', () => console.log('disconnected ...'));
   };
 
+  /**
+   * Attempts to connect to a peer.
+   * The input is this user's id, not the peer's id.
+   * We already know the peer's id, or else there is no peer.
+   */
   private connectToRoom = (myId: string) => {
     this.myId = myId;
-    console.log('my id:', this.myId);
     this.onIdGiven(myId);
     if (this.peerId !== null) {
       console.log(`Trying to connect to peer ${this.peerId}.`);
@@ -109,6 +114,9 @@ export default class Channel {
     }
   };
 
+  /**
+   * Channel handlers.
+   */
   private setConnectionHandlers = () => {
     if (this.connection === null) return;
 
@@ -132,6 +140,9 @@ export default class Channel {
     });
   };
 
+  /**
+   * Called after receiveing DataConnection.
+   */
   private onConnection = (connection: DataConnection) => {
     console.log('Recieved connection');
 
