@@ -1,8 +1,10 @@
 import React from 'react';
+import { Surface } from 'gl-react-dom';
 import { Intent, Spinner } from '@blueprintjs/core';
 
 import Theremin, { Location } from 'audio/utils/theremin';
 import { calcColor } from 'graphics/utils/color';
+import Mice from 'graphics/components/Mice';
 import Message, { kTimeout } from 'misc/utils/Message';
 import Channel from 'networking/utils/connect';
 import 'styles/Room.css';
@@ -206,6 +208,9 @@ export default class Room extends React.Component<Props, State> {
       >
         <h1>{this.channel.id}</h1>
         {stage === Stage.Loading && <Spinner />}
+        <Surface width={300} height={300}>
+          <Mice />
+        </Surface>
       </div>
     );
   };
