@@ -1,21 +1,22 @@
 import React from 'react';
-import { Frequency } from 'tone/Tone/core/type/Units';
-import { H5, Slider, Switch } from '@blueprintjs/core';
+import { Slider } from '@blueprintjs/core';
+
+interface Props {}
 
 interface State {
-  cutoff: Frequency
+  cutoff?: number
 }
 
-export class Controls extends React.Component<State> {
-  constructor() {
-    super();
+export default class SynthControl extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
     this.state = {cutoff: 100};
   }
 
   public render() {
-    const { cutoff } = this.state;
+    const { cutoff } = this.state === undefined ? this.state : {cutoff: 100};
       return (
-          <Controls>
+          <SynthControl>
               <Slider
                   min={100}
                   max={20000}
@@ -25,7 +26,7 @@ export class Controls extends React.Component<State> {
                   value={cutoff}
                   vertical={true}
               />
-          </Controls>
+          </SynthControl>
       );
   }
 
@@ -34,7 +35,8 @@ export class Controls extends React.Component<State> {
   }
 
   private renderLabel1 = (val: number) => {
-      return `${Math.round((20000 / this.state.cutoff) * 100)}%`;
+    const { cutoff } = this.state === undefined ? this.state : {cutoff: 100};
+      return `${Math.round((20000 / cutoff) * 100)}%`;
   };
 
 }

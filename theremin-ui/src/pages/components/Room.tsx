@@ -9,6 +9,7 @@ import Mice from 'graphics/components/Mice';
 import { Location } from 'misc/utils/location';
 import Message, { kTimeout } from 'misc/utils/Message';
 import Channel from 'networking/utils/connect';
+import SynthControl from 'pages/components/SynthControl';
 import 'styles/Room.css';
 
 
@@ -215,6 +216,7 @@ export default class Room extends React.Component<Props, State> {
       >
         <h1>{this.channel.id}</h1>
         {stage === Stage.Loading && <Spinner />}
+        <SynthControl></SynthControl>
         <Surface
           width={300}
           height={300}>
