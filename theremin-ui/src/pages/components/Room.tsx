@@ -133,6 +133,33 @@ export default class Room extends React.Component<Props, State> {
   };
 
   /**
+   * Fired when the screen is touched. Turns on theremin.
+   */
+  private onTouchStart = () => {
+    this.theremin.start();
+    this.setState({
+      stage: Stage.Playing,
+    });
+  };
+
+  /**
+   * Fired when finger disengages with screen. Turns on theremin.
+   */
+  private onTouchEnd = () => {
+    this.theremin.stop();
+    this.setState({
+      stage: Stage.Muted,
+    });
+  };
+
+  /**
+   * Fired when finger moves.
+   */
+  private onTouchMove = (event: TouchEvent) => {
+    console.log(event);
+  };
+
+  /**
    * Fired when the left mouse is released. Turns off theremin.
    */
   private onMouseUp = () => {
@@ -184,6 +211,10 @@ export default class Room extends React.Component<Props, State> {
     window.addEventListener('mousedown', this.onMouseDown);
     window.addEventListener('mouseup', this.onMouseUp);
     window.addEventListener('mousemove', this.onMouseMove);
+    window.addEventListener('touchstart', this.onTouchStart);
+    window.addEventListener('touchend', this.onTouchEnd);
+    window.addEventListener('touchmove', this.onTouchMove);
+
     this.setState({
       stage: Stage.Playing,
     });
@@ -196,6 +227,9 @@ export default class Room extends React.Component<Props, State> {
     window.removeEventListener('mousedown', this.onMouseDown);
     window.removeEventListener('mouseup', this.onMouseUp);
     window.removeEventListener('mousemove', this.onMouseMove);
+    window.removeEventListener('touchstart', this.onTouchStart);
+    window.removeEventListener('touchend', this.onTouchEnd);
+    window.removeEventListener('touchmove', this.onTouchMove);
   };
 
   /**
