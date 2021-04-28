@@ -123,24 +123,57 @@ export default class Room extends React.Component<Props, State> {
   };
 
   /**
-   * Fired when the left mouse is released. Turns on theremin.
+   * Generic method for when pointer/finger is used to click on the screen.
    */
-  private onMouseDown = () => {
+  private onEngaged = () => {
     this.theremin.start();
-    this.setState({
-      stage: Stage.Playing,
-    });
+    this.setState({ stage: Stage.Playing });
   };
 
   /**
-   * Fired when the left mouse is released. Turns off theremin.
+   * Generic method for when pointer/finger is released from the screen.
    */
-  private onMouseUp = () => {
+  private onReleased = () => {
     this.theremin.stop();
+    this.setState({ stage: Stage.Muted });
+  };
+
+  /**
+   * A generic method for when the user moves their pointer/finger around the
+   * screen.
+   * @param loc the non-normalized location of the pointer/finger.
+   */
+  private onMove = (loc: Location) => {
+    const normalized = this.normalize(loc);
+    if (normalized === null) return;
+
+    this.theremin.myLocation = normalized;
+    this.updateSound(true);
     this.setState({
-      stage: Stage.Muted,
+      mouse: this.theremin.myLocation,
     });
   };
+
+  /** Fired when the left mouse is released. Turns on theremin. */
+  private onMouseDown = () => this.onEngaged();
+
+  /** Fired when the screen is touched. Turns on theremin. */
+  private onTouchStart = () => this.onEngaged();
+
+  /** Fired when the left mouse is released. Turns off theremin. */
+  private onMouseUp = () => this.onReleased();
+
+  /** Fired when finger disengages with screen. Turns on theremin. */
+  private onTouchEnd = () => this.onReleased();
+
+  /** Fired when the mouse moves. Changes stored location and theremin sound. */
+  private onMouseMove = ({ x, y }: MouseEvent) => this.onMove({ x, y });
+
+  /** Fired when finger moves. */
+  private onTouchMove = ({ touches }: TouchEvent) => this.onMove({
+    x: touches[0].clientX,
+    y: touches[0].clientY,
+  });
 
   /**
    * Converts the (x,y) location on the screen into the range [0,1]x[0,1].
@@ -157,20 +190,6 @@ export default class Room extends React.Component<Props, State> {
   };
 
   /**
-   * Fired when the mouse moves. Changes stored location and theremin sound.
-   */
-  private onMouseMove = (event: MouseEvent) => {
-    const normalized = this.normalize({ x: event.x, y: event.y });
-    if (normalized === null) return;
-
-    this.theremin.myLocation = normalized;
-    this.updateSound(true);
-    this.setState({
-      mouse: this.theremin.myLocation,
-    });
-  }
-
-  /**
    * Initialization of UI code.
    */
   componentDidMount = () => {
@@ -184,6 +203,10 @@ export default class Room extends React.Component<Props, State> {
     window.addEventListener('mousedown', this.onMouseDown);
     window.addEventListener('mouseup', this.onMouseUp);
     window.addEventListener('mousemove', this.onMouseMove);
+    window.addEventListener('touchstart', this.onTouchStart);
+    window.addEventListener('touchend', this.onTouchEnd);
+    window.addEventListener('touchmove', this.onTouchMove);
+
     this.setState({
       stage: Stage.Playing,
     });
@@ -196,6 +219,9 @@ export default class Room extends React.Component<Props, State> {
     window.removeEventListener('mousedown', this.onMouseDown);
     window.removeEventListener('mouseup', this.onMouseUp);
     window.removeEventListener('mousemove', this.onMouseMove);
+    window.removeEventListener('touchstart', this.onTouchStart);
+    window.removeEventListener('touchend', this.onTouchEnd);
+    window.removeEventListener('touchmove', this.onTouchMove);
   };
 
   /**
