@@ -1,18 +1,13 @@
 import React from 'react';
-import { Surface } from 'gl-react-dom';
-import { Shaders, Node, GLSL } from 'gl-react';
 import { Intent, Spinner } from '@blueprintjs/core';
 
 import Theremin from 'audio/utils/theremin';
-import { calcColor } from 'graphics/utils/color';
 import Mice from 'graphics/components/Mice';
 import { Location } from 'misc/utils/location';
 import Message, { kTimeout } from 'misc/utils/Message';
 import Channel from 'networking/utils/connect';
 import 'styles/Room.css';
 
-
-const kBlack = '#000000';
 
 /** The state of the theremin. */
 enum Stage {
@@ -26,7 +21,6 @@ interface Props {
 }
 
 interface State {
-  color: string;
   stage: Stage;
   mouse: Location;
 }
@@ -59,10 +53,7 @@ export default class Room extends React.Component<Props, State> {
       volume: -10,
     });
 
-    this.screenRef = React.createRef();
-
     this.state = {
-      color: kBlack,
       stage: Stage.Loading,
       mouse: { x: 0, y: 0 },
     };
@@ -118,8 +109,7 @@ export default class Room extends React.Component<Props, State> {
     const { stage } = this.state;
     if (stage !== Stage.Playing) return;
 
-    const color = calcColor(sound);
-    this.setState({ stage, color });
+    this.setState({ stage });
   };
 
   /**
@@ -146,12 +136,9 @@ export default class Room extends React.Component<Props, State> {
    * Converts the (x,y) location on the screen into the range [0,1]x[0,1].
    */
   private normalize = (location: Location): Location | null => {
-    const { current } = this.screenRef;
-
-    // Somehow the rectangle could not be found.
-    if (current === null) return null;
-
-    const { height, width } = current.getBoundingClientRect();
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    
     const { x, y } = location;
     return { x: x / width, y: y / height };
   };
@@ -202,24 +189,14 @@ export default class Room extends React.Component<Props, State> {
    * Where everything comes together: spits out the HTML code.
    */
   render = () => {
-    const { stage, color, mouse } = this.state;
+    const { stage, mouse } = this.state;
     return (
       <div
         className='full'
-        ref={this.screenRef}
-        style={{
-          borderColor: stage === Stage.Playing ? color : kBlack,
-          borderWidth: '7px',
-          borderStyle: 'solid',
-        }}
       >
         <h1>{this.channel.id}</h1>
         {stage === Stage.Loading && <Spinner />}
-        <Surface
-          width={300}
-          height={300}>
-          <Mice mouse={mouse} />
-        </Surface>
+        <Mice mouse={mouse} />
       </div>
     );
   };
